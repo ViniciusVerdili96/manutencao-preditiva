@@ -1,116 +1,119 @@
-# Manutenção Preditiva com ESP32
+# Predictive Maintenance with ESP32
 
-**Protótipo que aprende a vibração normal de uma máquina e avisa quando ela muda**, antes que a
-falha vire parada. Um acelerômetro preso a um ventilador mede a vibração 1000 vezes por segundo, e um
-painel no computador mostra os sinais em tempo real, num globo com os clientes de uma empresa
-fictícia.
+**A prototype that learns how a machine normally vibrates and warns when that changes**, before a
+fault turns into downtime. An accelerometer attached to a fan measures vibration 1,000 times per
+second, and a desktop dashboard shows the signals in real time on a globe with the customers of a
+fictional company.
 
 ![ESP32](https://img.shields.io/badge/ESP32-C%2B%2B%20%2F%20Arduino-E7352C?logo=espressif&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
-![Qt](https://img.shields.io/badge/Interface-PySide6%20(Qt)-41CD52?logo=qt&logoColor=white)
-![NumPy](https://img.shields.io/badge/Análise-NumPy%20%2F%20FFT-013243?logo=numpy&logoColor=white)
-![Testes](https://img.shields.io/badge/testes%20automatizados-240-2EA44F)
+![Qt](https://img.shields.io/badge/UI-PySide6%20(Qt)-41CD52?logo=qt&logoColor=white)
+![NumPy](https://img.shields.io/badge/Analysis-NumPy%20%2F%20FFT-013243?logo=numpy&logoColor=white)
+![Tests](https://img.shields.io/badge/automated%20tests-240-2EA44F)
 
-## Demonstração
+## Demo
 
-[![Assista à demonstração](media/capa-video.jpg)](media/demo.mp4)
+[![Watch the demo](media/video-cover.jpg)](media/demo.mp4)
 
-*Vídeo de 1 min 22 s: o ventilador em funcionamento, a troca de velocidade e o alerta aparecendo na
-tela.*
+*1 min 22 s video: the fan running, the speed change, and the alert appearing on screen. The
+narration subtitles and the app interface are in Brazilian Portuguese.*
 
-## O que ele faz
+## What it does
 
-- **Aprende o padrão normal.** Com a máquina funcionando bem, um clique calibra a referência em 20
-  segundos.
-- **Detecta a mudança.** A cada 0,25 s o programa compara a vibração com a referência e, em cerca de
-  2 segundos fora do padrão, avisa **ROLAMENTO DANIFICADO**.
-- **Mostra o cliente afetado.** O globo gira até o país do cliente, e a aba de clientes abre com o
-  contato, o fuso horário e a data do primeiro erro.
-- **Avisa mesmo minimizado.** O programa fica perto do relógio do Windows e mostra um alerta na tela
-  quando algo muda.
-- **Mostra a saúde do próprio sensor.** Um cartão indica se a placa responde, quantas leituras chegam
-  por segundo e se a gravidade medida está perto de 1 g.
+- **Learns the normal pattern.** With the machine running well, one click calibrates the baseline in
+  20 seconds.
+- **Detects the change.** Every 0.25 s the software compares the vibration with the baseline, and
+  after about 2 seconds outside the pattern it shows **ROLAMENTO DANIFICADO** ("bearing damaged").
+- **Shows the affected customer.** The globe turns to the customer's country, and the customers tab
+  opens with the contact, the time zone, and the date of the first fault.
+- **Alerts even when minimized.** The app sits next to the Windows clock and pops up an alert when
+  something changes.
+- **Reports the sensor's own health.** A card shows whether the board responds, how many readings
+  arrive per second, and whether the measured gravity is close to 1 g.
 
-## Telas
+## Screens
 
 <table>
   <tr>
-    <td width="50%"><img src="media/tela-normal.png" alt="Painel em operação normal"></td>
-    <td width="50%"><img src="media/tela-alerta-cliente.png" alt="Alerta com a página do cliente"></td>
+    <td width="50%"><img src="media/screen-normal.png" alt="Dashboard in normal operation"></td>
+    <td width="50%"><img src="media/screen-alert-customer.png" alt="Alert with the customer page"></td>
   </tr>
   <tr>
-    <td><b>Operação normal.</b> Sinal em tempo real dos três eixos, espectro comparado à referência e
-    histórico do último minuto. O pico no histórico é o teste na velocidade 2.</td>
-    <td><b>Alerta.</b> O país do cliente fica vermelho, e a página dele mostra os parâmetros do sensor
-    real e a data do primeiro erro, no fuso do cliente e no fuso local.</td>
+    <td><b>Normal operation.</b> Real-time signal for all three axes, spectrum compared with the
+    baseline, and the last minute of history. The bump in the history is the speed 2 test.</td>
+    <td><b>Alert.</b> The customer's country turns red, and their page shows the real sensor's
+    readings and the date of the first fault, in both the customer's and the local time zone.</td>
   </tr>
   <tr>
-    <td><img src="media/tela-calibracao.png" alt="Painel aguardando calibração"></td>
-    <td><img src="media/montagem.jpg" alt="Sensor montado no ventilador"></td>
+    <td><img src="media/screen-calibration.png" alt="Dashboard waiting for calibration"></td>
+    <td><img src="media/setup.jpg" alt="Sensor mounted on the fan"></td>
   </tr>
   <tr>
-    <td><b>Antes da calibração.</b> O painel já mostra a vibração e espera o clique em
-    <i>Calibrar referência</i>.</td>
-    <td><b>Montagem.</b> O ESP32 e o acelerômetro presos à base do ventilador usado nos testes.</td>
+    <td><b>Before calibration.</b> The dashboard already shows the vibration and waits for a click on
+    <i>Calibrar referência</i> ("calibrate baseline").</td>
+    <td><b>Setup.</b> The ESP32 and the accelerometer attached to the base of the fan used in the
+    tests.</td>
   </tr>
 </table>
 
-*Todas as telas foram capturadas com o sensor real ligado ao ventilador.*
+*All screens were captured with the real sensor attached to the fan.*
 
-## Como funciona
+## How it works
 
 ```mermaid
 flowchart LR
-    A[Ventilador] -->|vibração| B["Acelerômetro<br/>MPU-6050, 1000 leituras/s"]
+    A[Fan] -->|vibration| B["Accelerometer<br/>MPU-6050, 1,000 readings/s"]
     B -->|I2C| C[ESP32]
-    C -->|USB| D["Painel no PC<br/>Python + Qt"]
-    D --> E["RMS e espectro (FFT)<br/>a cada 0,25 s"]
-    E --> F{"Fora do padrão<br/>aprendido?"}
-    F -->|não| G[Operação normal]
-    F -->|"sim, por 1,5 s"| H["Alerta e registro<br/>do primeiro erro"]
+    C -->|USB| D["Desktop dashboard<br/>Python + Qt"]
+    D --> E["RMS and spectrum (FFT)<br/>every 0.25 s"]
+    E --> F{"Outside the<br/>learned pattern?"}
+    F -->|no| G[Normal operation]
+    F -->|"yes, for 1.5 s"| H["Alert and first<br/>fault record"]
 ```
 
-O programa olha dois indicadores: a **energia** da vibração (RMS) e a **forma do espectro**, ou seja,
-quais frequências compõem a vibração. A forma do espectro percebe uma mudança mesmo quando a máquina
-não vibra mais forte. Os detalhes estão em [Como funciona](docs/como-funciona.md).
+The software tracks two indicators: the vibration **energy** (RMS) and the **shape of the
+spectrum**, that is, which frequencies make up the vibration. The spectrum shape catches a change even
+when the machine does not vibrate harder. The details are in [How it works](docs/how-it-works.md).
 
-## Resultados no ventilador real
+## Results on the real fan
 
-| Medida | Velocidade 1 (normal) | Velocidade 2 (simula o defeito) |
+| Measurement | Speed 1 (normal) | Speed 2 (stands in for the fault) |
 |---|---|---|
-| Vibração RMS | 170 a 185 mg | 230 a 250 mg |
-| Mudança no espectro | 1 % a 9 % | 19 % a 50 % |
-| Condição mostrada | Rolamento normal | Rolamento danificado |
+| Vibration RMS | 170 to 185 mg | 230 to 250 mg |
+| Spectrum change | 1% to 9% | 19% to 50% |
+| Status shown | Normal bearing | Damaged bearing |
 
-O limite aprendido na calibração ficou em cerca de 208 mg para o RMS e em 12 % para a mudança no
-espectro. Veja as medições e os problemas resolvidos em [Resultados e desafios](docs/resultados.md).
+The baseline learned during calibration set the limits at about 208 mg for RMS and 12% for the
+spectrum change. See the measurements and the problems solved in
+[Results and challenges](docs/results.md).
 
-## Tecnologias
+## Technologies
 
-| Parte | Tecnologia |
+| Part | Technology |
 |---|---|
-| Firmware | ESP32 em C++ (Arduino), leitura da fila interna do sensor a 1 kHz |
-| Sensor | Acelerômetro de 3 eixos compatível com o MPU-6050, faixa de ±4 g |
-| Análise | Python e NumPy: RMS, FFT com janela de Hann e limites estatísticos robustos |
-| Interface | PySide6 (Qt) e pyqtgraph, com globo em projeção ortográfica desenhado pelo programa |
-| Qualidade | 240 testes automatizados com pytest, incluindo uma placa imitada |
+| Firmware | ESP32 in C++ (Arduino), reading the sensor's internal FIFO at 1 kHz |
+| Sensor | 3-axis accelerometer compatible with the MPU-6050, ±4 g range |
+| Analysis | Python and NumPy: RMS, Hann-windowed FFT, and robust statistical limits |
+| Interface | PySide6 (Qt) and pyqtgraph, with a globe rendered in orthographic projection by the app |
+| Quality | 240 automated tests with pytest, including a simulated board |
 
-O hardware e as ligações estão em [Hardware](docs/hardware.md).
+The hardware and wiring are in [Hardware](docs/hardware.md).
 
-## Importante
+## Important notes
 
-- **O defeito é simulado.** Nenhum rolamento está danificado: a velocidade 2 do ventilador faz o
-  papel do defeito, e a mensagem é uma escolha da demonstração.
-- **Os clientes são fictícios.** Os 13 cadastros, como o secador de café de Mahatima, na Índia, são de
-  demonstração, com telefones zerados e e-mails `example.com`. Quem vibra de verdade é o ventilador.
-- **O sistema detecta desvio de padrão, não o tipo de defeito.** Uma aplicação real precisaria
-  comparar leituras na mesma velocidade e validar com defeitos físicos.
+- **The fault is simulated.** No bearing is damaged: the fan's speed 2 plays the role of the fault,
+  and the message is a choice made for the demo.
+- **The customers are fictional.** The 13 entries, such as Mahatima's coffee dryer in India, are for
+  demonstration only, with zeroed phone numbers and `example.com` emails. The fan is the only thing
+  actually vibrating.
+- **The system detects a deviation from the pattern, not the type of fault.** A real application
+  would need to compare readings at the same speed and validate them against physical faults.
 
-## Sobre o código
+## About the code
 
-O código-fonte deste projeto não está publicado. Este repositório apresenta o funcionamento, a
-arquitetura e os resultados.
+The source code for this project is not published. This repository presents how it works, its
+architecture, and its results.
 
-## Autor
+## Author
 
-**Vinicius Verdili**, projeto desenvolvido para apresentação na faculdade e no trabalho.
+**Vinicius Verdili**, a project built for presentations at college and at work.

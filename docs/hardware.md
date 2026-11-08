@@ -1,20 +1,20 @@
 # Hardware
 
-[Voltar ao início](../README.md)
+[Back to the main page](../README.md)
 
-![Sensor montado no ventilador](../media/montagem.jpg)
+![Sensor mounted on the fan](../media/setup.jpg)
 
-## Materiais
+## Parts
 
-| Item | Uso |
+| Item | Purpose |
 |---|---|
-| ESP32 WROOM-32, placa de 30 pinos | Lê o sensor e envia os dados pela USB |
-| Módulo GY-521, compatível com o MPU-6050 | Acelerômetro de 3 eixos |
-| Cabo micro USB de dados | Alimentação e comunicação com o computador |
-| Jumpers e solda na barra de pinos do sensor | Ligações |
-| Ventilador Arno Turbo Silêncio Maxx | Máquina monitorada |
+| ESP32 WROOM-32, 30-pin board | Reads the sensor and sends the data over USB |
+| GY-521 module, MPU-6050 compatible | 3-axis accelerometer |
+| Micro USB data cable | Power and communication with the computer |
+| Jumper wires and soldered sensor header | Connections |
+| Arno Turbo Silêncio Maxx fan | The monitored machine |
 
-## Ligações
+## Wiring
 
 | Sensor | ESP32 |
 |---|---|
@@ -23,14 +23,14 @@
 | SCL | D22 (GPIO22) |
 | SDA | D21 (GPIO21) |
 
-O sensor fica preso à parte rígida mais próxima do motor. O ESP32 fica fora do ventilador e leva só o
-sensor até ele.
+The sensor is attached to the rigid part closest to the motor. The ESP32 stays outside the fan, and
+only the sensor goes on it.
 
-## Configuração do sensor
+## Sensor configuration
 
-| Parâmetro | Valor |
+| Parameter | Value |
 |---|---|
-| Taxa de amostragem | 1000 leituras por segundo |
-| Faixa | ±4 g (8192 contagens por g) |
-| Filtro interno | Passa-baixa, com análise até 200 Hz |
-| Comunicação | I2C a 400 kHz, USB a 921600 bps |
+| Sampling rate | 1,000 readings per second |
+| Range | ±4 g (8,192 counts per g) |
+| Internal filter | Low-pass, with analysis up to 200 Hz |
+| Communication | I2C at 400 kHz, USB at 921,600 bps |
